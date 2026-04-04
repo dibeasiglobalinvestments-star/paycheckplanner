@@ -1,14 +1,32 @@
 "use client"
 
-import { useState } from "react"
-import { supabase } from "@/lib/supabase"
+import { useState, useEffect } from "react"
+import { createClient } from "@/lib/supabase/client"
+import { useRouter } from "next/navigation"
 
 export default function UpdatePasswordPage() {
-  const [password, setPassword] = useState("")
-  const [message, setMessage] = useState("")
-  const [loading, setLoading] = useState(false)
+  const supabase = createClient()
+  const router = useRouter()
 
-  const handleUpdate = async () => {
+  const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [sessionReady, setSessionReady] = useState(false)
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession()
+      if (data.session) {
+        setSessionReady(true)
+      } else {
+        alert("Invalid or expired reset link")
+        router.push("/login")
+      }
+    }
+
+    checkSession()
+  }, [])
+
+  const handleUpdatePassword = async () => {
     setLoading(true)
 
     const { error } = await supabase.auth.updateUser({
@@ -18,38 +36,37 @@ export default function UpdatePasswordPage() {
     setLoading(false)
 
     if (error) {
-      setMessage(error.message)
+      alert(error.message)
     } else {
-      setMessage("Password updated. You can now log in.")
+      alert("Password updated!")
+      router.push("/login")
     }
   }
 
+  if (!sessionReady) return null
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0f172a] text-white">
+    <div className="min-h-screen flex items-center justify-center bg-[#0B1F3A]">
+      <div className="bg-[#0F2A4A] p-8 rounded-xl w-[350px] text-center text-white">
 
-      <div className="bg-white/10 backdrop-blur-xl p-8 rounded-xl w-full max-w-md">
-
-        <h2 className="text-2xl font-bold mb-4">Set New Password</h2>
+        <h1 className="text-xl mb-4">Set New Password</h1>
 
         <input
           type="password"
           placeholder="New password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-3 rounded-lg text-black mb-4"
+          className="w-full mb-4 px-4 py-2 rounded-lg bg-white/10 border border-white/20"
         />
 
         <button
-          onClick={handleUpdate}
+          onClick={handleUpdatePassword}
           disabled={loading}
-          className="w-full bg-green-600 py-3 rounded-lg"
+          className="w-full bg-green-500 text-black py-3 rounded-lg"
         >
           {loading ? "Updating..." : "Update Password"}
         </button>
 
-        {message && (
-          <p className="mt-4 text-sm text-gray-300">{message}</p>
-        )}
       </div>
     </div>
   )

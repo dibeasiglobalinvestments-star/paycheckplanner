@@ -1,9 +1,7 @@
-import Stripe from "stripe"
 import { NextResponse } from "next/server"
+import Stripe from "stripe"
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-06-20",
-})
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 export async function POST() {
   try {
@@ -16,7 +14,7 @@ export async function POST() {
           quantity: 1,
         },
       ],
-      success_url: "http://localhost:3000/dashboard",
+      success_url: "http://localhost:3000/success",
       cancel_url: "http://localhost:3000/pricing",
     })
 
