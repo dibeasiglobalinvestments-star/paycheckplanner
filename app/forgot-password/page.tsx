@@ -1,39 +1,51 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
+import { useState } from "react"
+import { createClient } from "@/lib/supabase/client"
 
-export default function ForgotPassword() {
-  const [email, setEmail] = useState('')
+export default function ForgotPasswordPage() {
+  const supabase = createClient()
+
+  const [email, setEmail] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const handleReset = async () => {
+    setLoading(true)
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`,
+      redirectTo: "http://localhost:3000/update-password",
     })
 
     if (error) {
       alert(error.message)
     } else {
-      alert('Password reset email sent')
+      alert("Check your email for reset link")
     }
+
+    setLoading(false)
   }
 
   return (
-    <div className="p-10 max-w-md mx-auto space-y-4">
-      <h1 className="text-2xl font-bold">Reset Password</h1>
+    <div className="min-h-screen flex items-center justify-center bg-slate-900">
+      <div className="bg-slate-800 p-8 rounded-lg w-full max-w-md">
+        <h2 className="text-white text-xl mb-4">Reset Password</h2>
 
-      <input
-        className="w-full border p-2"
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-      />
+        <input
+          type="email"
+          placeholder="Enter your email"
+          className="w-full mb-4 p-2 rounded bg-slate-700 text-white"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-      <button
-        onClick={handleReset}
-        className="w-full bg-black text-white p-2"
-      >
-        Send Reset Email
-      </button>
+        <button
+          onClick={handleReset}
+          disabled={loading}
+          className="w-full bg-green-500 text-black py-2 rounded"
+        >
+          {loading ? "Sending..." : "Send Reset Email"}
+        </button>
+      </div>
     </div>
   )
 }
