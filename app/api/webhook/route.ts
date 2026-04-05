@@ -2,11 +2,13 @@ import { NextResponse } from "next/server"
 import Stripe from "stripe"
 import { createClient } from "@supabase/supabase-js"
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2024-06-20",
+})
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY! // IMPORTANT
 )
 
 export async function POST(req: Request) {
@@ -25,22 +27,32 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Webhook error" }, { status: 400 })
   }
 
-  // 🔥 SUCCESSFUL PAYMENT
   if (event.type === "checkout.session.completed") {
-    const session = event.data.object as any
+    const session: any = event.data.object
 
-    const userId = session.metadata.userId
-    const priceId = session.items?.data?.[0]?.price?.id
+    const customerEmail = session.customer_details.email
+    const priceId = session.metadata?.priceId
 
     let plan = "free"
 
-    if (priceId === "price_STARTER_ID") plan = "starter"
-    if (priceId === "price_PREMIUM_ID") plan = "premium"
+    if (
+      priceId === "price_1TIwD3FNVPZvQT3GJ5vGJ4kR" ||
+      priceId === "price_1TIyAEFNVPZvQT3GLjhBbiVy"
+    ) {
+      plan = "starter"
+    }
+
+    if (
+      priceId === "price_1TIwE2FNVPZvQT3G1Wf7uVcb" ||
+      priceId === "price_1TIy9dFNVPZvQT3GXT5XzHLV"
+    ) {
+      plan = "premium"
+    }
 
     await supabase
       .from("profiles")
       .update({ plan })
-      .eq("id", userId)
+      .eq("email", customerEmail)
   }
 
   return NextResponse.json({ received: true })
