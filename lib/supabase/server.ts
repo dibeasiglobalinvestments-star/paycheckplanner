@@ -12,15 +12,11 @@ export async function createClient() {
         get(name: string) {
           return cookieStore.get(name)?.value
         },
-        set(name: string, value: string, options: any) {
-          try {
-            cookieStore.set({ name, value, ...options })
-          } catch {}
+        set() {
+          // DO NOTHING (required)
         },
-        remove(name: string, options: any) {
-          try {
-            cookieStore.set({ name, value: "", ...options })
-          } catch {}
+        remove() {
+          // DO NOTHING (required)
         },
       },
     }

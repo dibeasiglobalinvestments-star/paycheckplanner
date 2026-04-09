@@ -8,7 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // IMPORTANT
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
 export async function POST(req: Request) {
@@ -23,14 +23,14 @@ export async function POST(req: Request) {
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!
     )
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: "Webhook error" }, { status: 400 })
   }
 
   if (event.type === "checkout.session.completed") {
     const session: any = event.data.object
 
-    const customerEmail = session.customer_details.email
+    const email = session.customer_details.email
     const priceId = session.metadata?.priceId
 
     let plan = "free"
@@ -49,10 +49,7 @@ export async function POST(req: Request) {
       plan = "premium"
     }
 
-    await supabase
-      .from("profiles")
-      .update({ plan })
-      .eq("email", customerEmail)
+    await supabase.from("profiles").update({ plan }).eq("email", email)
   }
 
   return NextResponse.json({ received: true })
