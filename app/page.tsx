@@ -11,10 +11,10 @@ export default function HomePage() {
         </p>
 
         <a
-          href="/pricing"
+          href="/login"
           className="inline-block bg-green-500 hover:bg-green-600 text-black font-semibold px-6 py-3 rounded-lg"
         >
-          View Plans
+          Get Started
         </a>
       </div>
     </main>
