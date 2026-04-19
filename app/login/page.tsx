@@ -1,53 +1,53 @@
 "use client"
 
+import { useState } from "react"
+import { createClient } from "@/lib/supabaseClient"
 import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
+  const supabase = createClient()
   const router = useRouter()
 
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+
+  const handleLogin = async () => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (!error) {
+      router.push("/dashboard")
+    } else {
+      alert(error.message)
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center px-6">
+    <div className="min-h-screen flex items-center justify-center bg-[#020617]">
+      <div className="bg-white p-8 rounded-xl w-full max-w-md">
+        <h2 className="text-black text-xl font-semibold mb-4">Login</h2>
 
-      <div className="max-w-6xl w-full grid md:grid-cols-2 gap-12 items-center">
+        <input
+          className="w-full border p-2 mb-3"
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-        {/* LEFT SIDE */}
-        <div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            Plan Every Paycheck.
-            <br />
-            Eliminate Debt Faster.
-          </h1>
+        <input
+          type="password"
+          className="w-full border p-2 mb-4"
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-          <p className="text-gray-400 text-lg mb-8 max-w-md">
-            Stop guessing where your money goes. Build a system that tracks,
-            prioritizes, and accelerates your path to financial freedom.
-          </p>
-
-          <button
-            onClick={() => router.push("/onboarding")}
-            className="bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-lg font-semibold"
-          >
-            Get Started
-          </button>
-        </div>
-
-        {/* RIGHT SIDE (LOGO CARD ONLY) */}
-        <div className="bg-white rounded-xl p-8 text-center">
-          <img
-            src="/logo.png"
-            alt="Paycheck Planner"
-            style={{
-              height: 90,
-              width: "auto",
-              margin: "0 auto",
-            }}
-          />
-
-          <p className="text-gray-600 mt-6">
-            Start your financial system in minutes.
-          </p>
-        </div>
-
+        <button
+          onClick={handleLogin}
+          className="w-full bg-black text-white py-2 rounded"
+        >
+          Login
+        </button>
       </div>
     </div>
   )

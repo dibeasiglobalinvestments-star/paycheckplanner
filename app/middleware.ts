@@ -1,40 +1,16 @@
-import { createServerClient } from "@supabase/ssr"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
+export function middleware(req: NextRequest) {
+  const publicPaths = ["/", "/login", "/pricing"]
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return req.cookies.get(name)?.value
-        },
-        set(name: string, value: string, options: any) {
-          res.cookies.set(name, value, options)
-        },
-        remove(name: string, options: any) {
-          res.cookies.set(name, "", options)
-        },
-      },
-    }
+  const isPublic = publicPaths.some((path) =>
+    req.nextUrl.pathname.startsWith(path)
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  // 🔒 PROTECT DASHBOARD
-  if (!user && req.nextUrl.pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/login", req.url))
+  if (isPublic) {
+    return NextResponse.next()
   }
 
-  return res
-}
-
-export const config = {
-  matcher: ["/dashboard/:path*"],
+  return NextResponse.next()
 }
