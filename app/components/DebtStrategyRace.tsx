@@ -1,80 +1,34 @@
-"use client"
+import { canUseSnowball } from "@/lib/permissions"
 
-import { useEffect, useState } from "react"
-import { createClient } from "@/lib/supabase"
-import { calculatePayoff } from "@/lib/payoffEngine"
+export default function DebtStrategyRace({ plan }: { plan: string }) {
+  // 🔒 HARD LOCK
+  if (!canUseSnowball(plan)) {
+    return (
+      <div className="p-6 text-center">
+        <div className="bg-[#0f172a] border border-gray-700 rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-white mb-2">
+            🔒 Premium Feature
+          </h2>
 
-export default function DebtStrategyRace() {
+          <p className="text-gray-400 mb-4">
+            Snowball & Avalanche strategies are available on Premium.
+          </p>
 
-  const [snowballMonths, setSnowballMonths] = useState<number | null>(null)
-  const [avalancheMonths, setAvalancheMonths] = useState<number | null>(null)
-
-  useEffect(() => {
-    loadData()
-  }, [])
-
-  async function loadData() {
-
-    try {
-
-      const supabase = createClient()
-
-      const { data } = await supabase
-        .from("debts")
-        .select("*")
-
-      if (!data || data.length === 0) {
-        setSnowballMonths(0)
-        setAvalancheMonths(0)
-        return
-      }
-
-      const snowball = [...data].sort(
-        (a: any, b: any) => a.balance - b.balance
-      )
-
-      const avalanche = [...data].sort(
-        (a: any, b: any) => b.interest_rate - a.interest_rate
-      )
-
-      const snowballResult = calculatePayoff(snowball)
-      const avalancheResult = calculatePayoff(avalanche)
-
-      setSnowballMonths(snowballResult.months)
-      setAvalancheMonths(avalancheResult.months)
-
-    } catch (err) {
-      console.error("StrategyRace error:", err)
-      setSnowballMonths(0)
-      setAvalancheMonths(0)
-    }
-
+          <a
+            href="/pricing"
+            className="inline-block bg-green-500 hover:bg-green-600 text-black px-4 py-2 rounded-lg"
+          >
+            Upgrade to Premium
+          </a>
+        </div>
+      </div>
+    )
   }
 
+  // ✅ REAL FEATURE (only premium reaches here)
   return (
-
-    <div className="bg-white p-6 rounded-2xl shadow">
-
-      <h2 className="text-xl font-bold mb-4">
-        Debt Strategy Race
-      </h2>
-
-      <div className="space-y-2">
-
-        <p>
-          Snowball Payoff Time:
-          <strong> {snowballMonths ?? "..."} months</strong>
-        </p>
-
-        <p>
-          Avalanche Payoff Time:
-          <strong> {avalancheMonths ?? "..."} months</strong>
-        </p>
-
-      </div>
-
+    <div>
+      {/* YOUR EXISTING SNOWBALL LOGIC */}
     </div>
-
   )
-
 }

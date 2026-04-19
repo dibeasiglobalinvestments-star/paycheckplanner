@@ -2,49 +2,41 @@
 
 import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
+import { useRouter } from "next/navigation"
 
-export default function UpdatePasswordPage() {
+export default function UpdatePassword() {
   const supabase = createClient()
-
+  const router = useRouter()
   const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
 
-  const handleUpdatePassword = async () => {
-    setLoading(true)
-
-    const { error } = await supabase.auth.updateUser({
-      password,
-    })
-
-    if (error) {
-      alert(error.message)
-    } else {
-      alert("Password updated successfully")
-      window.location.href = "/dashboard"
-    }
-
-    setLoading(false)
+  const handleUpdate = async () => {
+    await supabase.auth.updateUser({ password })
+    router.push("/dashboard")
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900">
-      <div className="bg-slate-800 p-8 rounded-lg w-full max-w-md">
-        <h2 className="text-white text-xl mb-4">Set New Password</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded w-full max-w-md">
+
+        <img
+          src="/logo.png"
+          alt="Paycheck Planner"
+          style={{ height: "64px", margin: "0 auto 20px" }}
+        />
 
         <input
           type="password"
           placeholder="New password"
-          className="w-full mb-4 p-2 rounded bg-slate-700 text-white"
+          className="w-full border p-2 mb-3"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
         <button
-          onClick={handleUpdatePassword}
-          disabled={loading}
-          className="w-full bg-green-500 text-black py-2 rounded"
+          onClick={handleUpdate}
+          className="w-full bg-black text-white py-2 rounded"
         >
-          {loading ? "Updating..." : "Update Password"}
+          Update Password
         </button>
       </div>
     </div>

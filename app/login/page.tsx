@@ -1,61 +1,54 @@
 "use client"
 
-import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
-  return (
-    <div className="grid grid-cols-2 min-h-screen">
+  const router = useRouter()
 
-      {/* LEFT SIDE */}
-      <div className="bg-blue-600 flex items-center justify-center px-12">
-        <div className="max-w-md text-white">
-          <h1 className="text-4xl font-bold mb-6">
-            Take Control of Your Money
+  return (
+    <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center px-6">
+
+      <div className="max-w-6xl w-full grid md:grid-cols-2 gap-12 items-center">
+
+        {/* LEFT SIDE */}
+        <div>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            Plan Every Paycheck.
+            <br />
+            Eliminate Debt Faster.
           </h1>
-          <p className="text-lg">
-            Plan your paycheck, eliminate debt, and build wealth smarter.
+
+          <p className="text-gray-400 text-lg mb-8 max-w-md">
+            Stop guessing where your money goes. Build a system that tracks,
+            prioritizes, and accelerates your path to financial freedom.
+          </p>
+
+          <button
+            onClick={() => router.push("/onboarding")}
+            className="bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-lg font-semibold"
+          >
+            Get Started
+          </button>
+        </div>
+
+        {/* RIGHT SIDE (LOGO CARD ONLY) */}
+        <div className="bg-white rounded-xl p-8 text-center">
+          <img
+            src="/logo.png"
+            alt="Paycheck Planner"
+            style={{
+              height: 90,
+              width: "auto",
+              margin: "0 auto",
+            }}
+          />
+
+          <p className="text-gray-600 mt-6">
+            Start your financial system in minutes.
           </p>
         </div>
+
       </div>
-
-      {/* RIGHT SIDE */}
-      <div className="bg-gray-100 flex items-center justify-center">
-
-        <div className="bg-white p-8 rounded-xl w-full max-w-md shadow">
-
-          {/* LOGO */}
-          <div className="flex justify-center mb-6">
-            <Image
-              src="/logo.png"
-              alt="Paycheck Planner"
-              width={80}   // 🔥 MATCH THIS SIZE
-              height={80}
-            />
-          </div>
-
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full mb-3 p-3 border rounded"
-          />
-
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full mb-4 p-3 border rounded"
-          />
-
-          <button className="w-full bg-black text-white py-3 rounded mb-3">
-            Login
-          </button>
-
-          <button className="w-full bg-red-500 text-white py-3 rounded">
-            Continue with Google
-          </button>
-
-        </div>
-      </div>
-
     </div>
   )
 }
